@@ -1,12 +1,12 @@
 package server;
 
-import client.ClientHandler;
 import dataBase.RequestDB;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class ChatServer {
@@ -19,7 +19,7 @@ public class ChatServer {
 
     public ChatServer() {
         loggedClient = new HashSet<>();
-        requestDB=new RequestDB();
+        requestDB = new RequestDB();
 
         try {
             ServerSocket serverSocket = new ServerSocket(8080);
@@ -27,7 +27,7 @@ public class ChatServer {
             while (true) {
                 System.out.println("Waiting connection");
                 Socket accept = serverSocket.accept();
-                new ClientHandler(accept,this);
+                new ClientHandler(accept, this);
             }
         } catch (IOException e) {
             throw new ChatServerException("Что-то пошло не так", e);
@@ -35,13 +35,20 @@ public class ChatServer {
 
     }
 
-    public void broadcast(String massage) {
+    public synchronized void broadcast(String massage) {
         for (ClientHandler clientHandler : loggedClient) {
             clientHandler.sendMassage(massage);
         }
     }
-    public void neroCast(String massage, ClientHandler clientHandler){
-        clientHandler.sendMassage(massage);
+
+    public synchronized void neroCast(String name, String massage) {
+        Iterator<ClientHandler> iterator = loggedClient.iterator();
+        while (iterator.hasNext()) {
+            ClientHandler clientHandler = iterator.next();
+            if (clientHandler.getName().equals(name)) {
+                clientHandler.sendMassage(massage);
+            }
+        }
     }
 
     public void subscribe(ClientHandler clientHandler) {
@@ -54,7 +61,5 @@ public class ChatServer {
 
     public boolean isLoggedIn(String name) {
         return loggedClient.stream().filter(client -> client.getName().equals(name)).findFirst().isPresent();
-//                anyMatch(clientHandler -> clientHandler.getName().equals(name));
-
     }
 }

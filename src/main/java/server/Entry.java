@@ -1,4 +1,4 @@
-package client;
+package server;
 
 public class Entry {
     private String login;

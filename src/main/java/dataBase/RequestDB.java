@@ -1,6 +1,6 @@
 package dataBase;
 
-import client.Entry;
+import server.Entry;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +36,7 @@ public class RequestDB {
         try {
             connection.setAutoCommit(false);
             PreparedStatement preparedStatement = connection.
-                    prepareStatement("INSERT INTO networkchat SET(login, password, name) VALUES (?,?,?)");
+                    prepareStatement("INSERT INTO book (login, password, name) VALUES (?,?,?)");
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
             preparedStatement.setString(3, name);
@@ -54,16 +54,16 @@ public class RequestDB {
         }
     }
 
-    public void update(String name, String login) {
+    public void update(String login, String password, String name) {
         Connection connection = ConnectionDB.getConnection();
         try {
             connection.setAutoCommit(false);
             PreparedStatement preparedStatement = connection.
-                    prepareStatement("UPDATE networkchat SET name =? WHERE login=?");
+                    prepareStatement("UPDATE book SET name =? WHERE login=? AND password=?");
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, login);
+            preparedStatement.setString(3, password);
             preparedStatement.execute();
-
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -77,16 +77,22 @@ public class RequestDB {
         }
     }
 
-    public void delete(String login) {
+    public void delete(String login, String password) {
         Connection connection = ConnectionDB.getConnection();
         try {
             connection.setAutoCommit(false);
             PreparedStatement preparedStatement = connection.
-                    prepareStatement("DELETE*FROM networkchat WHERE login=?");
+                    prepareStatement("DELETE FROM book WHERE login=? AND password=?");
             preparedStatement.setString(1, login);
+            preparedStatement.setString(2, password);
             preparedStatement.execute();
             connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             e.printStackTrace();
         } finally {
             close(connection);
