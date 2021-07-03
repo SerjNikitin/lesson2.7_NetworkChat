@@ -2,7 +2,7 @@
 Проект "Сетевой чат"
 Используемые технологии:
 Java: Socket, DataInput/OutputStream, StreamApi, JDBC, BufferedReader, swing, Maven;
-СУБД: MySQL,
+СУБД: MySQL;
 Git.
 
 Серверная часть.
