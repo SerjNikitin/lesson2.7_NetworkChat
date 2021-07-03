@@ -89,20 +89,26 @@ public class ClientHandler {
             try {
                 String massage = in.readUTF();
                 if (massage.startsWith("/w")) {
-                    String[] data = massage.split(" ");
-                    chatServer.neroCast(data[1], massage);
+                    sendMassage("Введите имя пользователя и сообщение");
+                    String updMassage = in.readUTF();
+                    String[] data = updMassage.split(" ");
+                    chatServer.neroCast(data[0], updMassage);
                 } else if (massage.startsWith("/del")) {
-                    String[] data = massage.split(" ");
-                    chatServer.getRequestDB().delete(data[1], data[2]);
+                    System.out.println("Введите логин и пароль чтобы удалить ваш аккаунт");
+                    String updMassage = in.readUTF();
+                    String[] data = updMassage.split(" ");
+                    chatServer.getRequestDB().delete(data[0], data[1]);
                     sendMassage("Вы удалили свой аккаунт");
                     chatServer.broadcast(String.format("Пользователь %s удалил свой аккаунт", name));
                     chatServer.unsubscribe(this);
                     authentication();
                 } else if (massage.startsWith("/upd")) {
-                    String[] data = massage.split(" ");
-                    chatServer.getRequestDB().update(data[1], data[2], data[3]);
-                    chatServer.broadcast(String.format("Пользователь %s поменял свой ник на %s", name, data[3]));
-                    name = data[3];
+                    sendMassage("Введите логин пароль и новое имя");
+                    String updMassage = in.readUTF();
+                    String[] data = updMassage.split(" ");
+                    chatServer.getRequestDB().update(data[0], data[1], data[2]);
+                    chatServer.broadcast(String.format("Пользователь %s поменял свой ник на %s", name, data[2]));
+                    name = data[2];
                 } else if (massage.startsWith("-exit")) {
                     chatServer.broadcast(String.format("Пользователь %s вышел из чата", name));
                     chatServer.unsubscribe(this);
@@ -125,7 +131,7 @@ public class ClientHandler {
     public void doTimer() {
         new Thread(() -> {
             try {
-                Thread.sleep(12000);
+                Thread.sleep(120000);
                 if (name == null) {
                     out.writeUTF("The authorization time is over");
                     socket.close();

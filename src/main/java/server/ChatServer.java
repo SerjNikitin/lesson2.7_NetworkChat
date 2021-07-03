@@ -1,13 +1,12 @@
 package server;
 
+import client.ChatHistory;
 import dataBase.RequestDB;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class ChatServer {
     private Set<ClientHandler> loggedClient;
@@ -39,6 +38,8 @@ public class ChatServer {
         for (ClientHandler clientHandler : loggedClient) {
             clientHandler.sendMassage(massage);
         }
+        ChatHistory ch = new ChatHistory();
+        ch.writeHistory(massage);
     }
 
     public synchronized void neroCast(String name, String massage) {
@@ -53,6 +54,9 @@ public class ChatServer {
 
     public void subscribe(ClientHandler clientHandler) {
         loggedClient.add(clientHandler);
+        ChatHistory chatHistory=new ChatHistory();
+        ArrayList<String> list = chatHistory.readeHistory();
+        clientHandler.sendMassage(Arrays.toString(list.toArray()));
     }
 
     public void unsubscribe(ClientHandler clientHandler) {
@@ -60,6 +64,6 @@ public class ChatServer {
     }
 
     public boolean isLoggedIn(String name) {
-        return loggedClient.stream().filter(client -> client.getName().equals(name)).findFirst().isPresent();
+        return loggedClient.stream().anyMatch(client -> client.getName().equals(name));
     }
 }
