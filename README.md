@@ -1,7 +1,7 @@
 # lesson2.7_NetworkChat
 Проект "Сетевой чат"
 Используемые технологии:
-Java: Socket, DataInput/OutputStream, StreamApi, JDBC, BufferedReader, swing, Maven;
+Java: DataInput/OutputStream, StreamApi, JDBC, BufferedReader, swing, Maven;
 СУБД: MySQL;
 Git.
 
